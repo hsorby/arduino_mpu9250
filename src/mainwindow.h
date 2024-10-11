@@ -1,23 +1,13 @@
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
+#pragma once
 
-#include <rOc_timer.h>
-#include <rOc_serial.h>
-#include <iostream>
 #include <QtWidgets/QMainWindow>
-#include <qgridlayout.h>
-#include <objectgl.h>
+#include <QGridLayout>
 #include <QMenuBar>
 #include <QMessageBox>
-#include <MadgwickAHRS.h>
 
-#if defined (_WIN32) || defined( _WIN64)
-#define         DEVICE_NAME     "COM1"
-#endif
-#ifdef __linux__
-#define         DEVICE_NAME     "/dev/ttyACM0"
-#endif
 
+#include "rOc_serial.h"
+#include "objectgl.h"
 
 
 class MainWindow : public QMainWindow
@@ -64,4 +54,3 @@ private:
 
 };
 
-#endif // MAINWINDOW_H

@@ -1,7 +1,18 @@
 #include "mainwindow.h"
-#include <windows.h>
-#include <time.h>
 
+#include <QThread>
+#include <iostream>
+
+#if defined (_WIN32) || defined( _WIN64)
+    // Library effective with Windows
+    #include <windows.h>
+#else
+    // Library effective with Linux
+    #include <unistd.h>
+#endif
+
+
+#include "MadgwickAHRS.h"
 
 // Constructor of the main window
 // Create window properties, menu etc ...
@@ -30,18 +41,20 @@ MainWindow::MainWindow(QWidget *parent,int w, int h)
     // Create the menubar
     QMenu *FileMenu = menuBar()->addMenu("&File");
     FileMenu->addSeparator();
-    FileMenu->addAction("Quit", qApp, SLOT (quit()), QKeySequence(tr("Ctrl+Q")));
+    // FileMenu->addAction("Quit", qApp, SLOT(quit()), QKeySequence(tr("Ctrl+Q")));
+    QAction *action = FileMenu->addAction("Quit", QKeySequence(tr("Ctrl+q")));
+    QObject::connect(action, &QAction::triggered, this, &QMainWindow::close);
 
     // Add menu items
     QMenu *ViewMenu = menuBar()->addMenu("&View");
-    ViewMenu->addAction("Front view",       Object_GL, SLOT (FrontView()),  QKeySequence(tr("Ctrl+f")));
-    ViewMenu->addAction("Rear view",        Object_GL, SLOT (RearView()),   QKeySequence(tr("Ctrl+e")));
-    ViewMenu->addAction("Left view",        Object_GL, SLOT (LeftView()),   QKeySequence(tr("Ctrl+l")));
-    ViewMenu->addAction("Right view",       Object_GL, SLOT (RightView()),  QKeySequence(tr("Ctrl+r")));
-    ViewMenu->addAction("Top view",         Object_GL, SLOT (TopView()),    QKeySequence(tr("Ctrl+t")));
-    ViewMenu->addAction("Bottom view",      Object_GL, SLOT (BottomView()), QKeySequence(tr("Ctrl+b")));
+    ViewMenu->addAction("Front view", QKeySequence(tr("Ctrl+f")), Object_GL, &ObjectOpenGL::FrontView);
+    ViewMenu->addAction("Rear view", QKeySequence(tr("Ctrl+e")), Object_GL, &ObjectOpenGL::RearView);
+    ViewMenu->addAction("Left view", QKeySequence(tr("Ctrl+l")), Object_GL, &ObjectOpenGL::LeftView);
+    ViewMenu->addAction("Right view", QKeySequence(tr("Ctrl+r")), Object_GL, &ObjectOpenGL::RightView);
+    ViewMenu->addAction("Top view", QKeySequence(tr("Ctrl+t")), Object_GL, &ObjectOpenGL::TopView);
+    ViewMenu->addAction("Bottom view", QKeySequence(tr("Ctrl+b")), Object_GL, &ObjectOpenGL::BottomView);
     FileMenu->addSeparator();
-    ViewMenu->addAction("Isometric",        Object_GL, SLOT (IsometricView()), QKeySequence(tr("Ctrl+i")));
+    ViewMenu->addAction("Isometric", QKeySequence(tr("Ctrl+i")), Object_GL, &ObjectOpenGL::IsometricView);
     QMenu *AboutMenu = menuBar()->addMenu("?");
     AboutMenu->addAction("About Convert_STL_2_Cube", this, SLOT (handleAbout()));
 
@@ -80,7 +93,7 @@ void MainWindow::resizeEvent(QResizeEvent *)
 // Timer event : repain the Open Gl window
 void MainWindow::onTimer_UpdateDisplay()
 {
-    Object_GL->updateGL();
+    Object_GL->update();
 }
 
 
@@ -104,6 +117,7 @@ void MainWindow::onTimer_ReadData()
         char buffer[200];
 
         mpu9250.readString(buffer, '\n', 200, 10);
+        std::cout << "buffer: " << buffer << std::endl;
         //mpu9250.readStringNoTimeOut(buffer,'\n',200);
 
 
@@ -173,7 +187,7 @@ void MainWindow::onTimer_ReadData()
     }
     else
     {
-        Sleep(10);
+        usleep(10);
     }
 }
 
@@ -190,15 +204,19 @@ void MainWindow::handleAbout()
 bool MainWindow::connect()
 {
     // Connect to serial port
+    QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
 
-    if (mpu9250.openDevice(DEVICE_NAME,57600)!=1)
+    std::cout << "Attempting to open: " << env.value("MPU9250_DEVICE_NAME", "/dev/null").toStdString() << " ...";
+    if (mpu9250.openDevice(env.value("MPU9250_DEVICE_NAME", "/dev/null").toStdString().c_str(), env.value("MPU9250_BAUD_RATE", "115200").toUInt()) != 1)
     {
+        std::cout << " Failure" << std::endl;
         std::cerr << "Error while opening serial device" << std::endl;
         return false;
     }
 
     // Flush receiver of previously received data
-    Sleep(100);
+    std::cout << " Success" << std::endl;
+    usleep(100);
     mpu9250.flushReceiver();
     return true;
 }

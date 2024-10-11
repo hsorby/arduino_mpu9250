@@ -1,14 +1,12 @@
-#ifndef OBJECTGL_H
-#define OBJECTGL_H
+#pragma once
 
-#include <QGLWidget>
+#include <QOpenGLWidget>
 #include <QtGui>
-#include <iostream>
 
 
 //using namespace std;
 
-class ObjectOpenGL : public QGLWidget
+class ObjectOpenGL : public QOpenGLWidget
 {
     Q_OBJECT
 
@@ -83,5 +81,3 @@ private:
     double                  angle_x,angle_y,angle_z;
 
 };
-
-#endif // OBJECTGL_H

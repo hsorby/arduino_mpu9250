@@ -15,7 +15,8 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN 
 This is a licence-free software, it can be used by anyone who try to build a better world.
  */
 
-#include <rOc_serial.h>
+#include "rOc_serial.h"
+#include <strings.h>
 
 
 
@@ -142,7 +143,7 @@ char rOc_serial::openDevice(const char *Device,const unsigned int Bauds)
     return 1;                                                           // Opening successfull
 
 #endif
-#ifdef __linux__    
+#if defined(__linux__) || defined(__APPLE__)
     struct termios options;                                             // Structure with the device's options
 
 
@@ -190,7 +191,7 @@ void rOc_serial::closeDevice()
 #if defined (_WIN32) || defined( _WIN64)
     CloseHandle(hSerial);
 #endif
-#ifdef __linux__
+#if defined(__linux__) || defined(__APPLE__)
     close (fd);
 #endif
 }
@@ -217,7 +218,7 @@ char rOc_serial::writeChar(const char Byte)
         return -1;                                                      // Error while writing
     return 1;                                                           // Write operation successfull
 #endif
-#ifdef __linux__
+#if defined(__linux__) || defined(__APPLE__)
     if (write(fd,&Byte,1)!=1)                                           // Write the char
         return -1;                                                      // Error while writting
     return 1;                                                           // Write operation successfull
@@ -244,9 +245,9 @@ char rOc_serial::writeString(const char *String)
         return -1;                                                      // Error while writing
     return 1;                                                           // Write operation successfull
 #endif
-#ifdef __linux__
-    int Lenght=strlen(String);                                          // Lenght of the string
-    if (write(fd,String,Lenght)!=Lenght)                                // Write the string
+#if defined(__linux__) || defined(__APPLE__)
+    int length = strlen(String);                                          // Length of the string
+    if (write(fd,String,length) != length)                                // Write the string
         return -1;                                                      // error while writing
     return 1;                                                           // Write operation successfull
 #endif
@@ -272,7 +273,7 @@ char rOc_serial::writeBytes(const void *Buffer, const unsigned int NbBytes)
         return -1;                                                      // Error while writing
     return 1;                                                           // Write operation successfull
 #endif
-#ifdef __linux__
+#if defined(__linux__) || defined(__APPLE__)
     if (write (fd,Buffer,NbBytes)!=(ssize_t)NbBytes)                              // Write data
         return -1;                                                      // Error while writing
     return 1;                                                           // Write operation successfull
@@ -304,7 +305,7 @@ char rOc_serial::readChar(char *pByte,unsigned int TimeOut_ms)
     if (dwBytesRead==0) return 0;                                       // Return 1 if the timeout is reached
     return 1;                                                           // Success
 #endif
-#ifdef __linux__
+#if defined(__linux__) || defined(__APPLE__)
     TimeOut         Timer;                                              // Timer used for timeout
     Timer.InitTimer();                                                  // Initialise the timer
     while (Timer.ElapsedTime_ms()<TimeOut_ms || TimeOut_ms==0)          // While Timeout is not reached
@@ -423,7 +424,7 @@ int rOc_serial::readBytes (void *Buffer,unsigned int MaxNbBytes,unsigned int Tim
         return -2;                                                      // Error while reading the byte
     return dwBytesRead;
 #endif
-#ifdef __linux__
+#if defined(__linux__) || defined(__APPLE__)
     TimeOut          Timer;                                             // Timer used for timeout
     Timer.InitTimer();                                                  // Initialise the timer
     unsigned int     NbByteRead=0;
@@ -461,7 +462,7 @@ int rOc_serial::readBytes (void *Buffer,unsigned int MaxNbBytes,unsigned int Tim
 
 void rOc_serial::flushReceiver()
 {
-#ifdef __linux__
+#if defined(__linux__) || defined(__APPLE__)
     tcflush(fd,TCIFLUSH);
 #endif
 }
@@ -474,17 +475,16 @@ void rOc_serial::flushReceiver()
 */
 int rOc_serial::peekReceiver()
 {
+    int Nbytes = 0;
 #if defined (_WIN32) || defined(_WIN64)
     DWORD   errors = CE_IOE;
     COMSTAT commStat;
-    int Nbytes = 0;
 
     if(!ClearCommError(hSerial, &errors, &commStat))
         Nbytes = 0;
     else
         Nbytes = commStat.cbInQue;
-#endif
-#ifdef __linux__
+#elif defined(__linux__) || defined(__APPLE__)
     ioctl(fd, FIONREAD, &Nbytes);
 #endif
     return Nbytes;
@@ -552,7 +552,7 @@ void rOc_serial::DTR(bool Status)
     else
         EscapeCommFunction(hSerial, CLRDTR);
 #endif
-#ifdef __linux__
+#if defined(__linux__) || defined(__APPLE__)
 
     int status_DTR=0;
     ioctl(fd, TIOCMGET, &status_DTR);
@@ -580,7 +580,7 @@ void rOc_serial::RTS(bool Status)
     else
         EscapeCommFunction(hSerial, CLRRTS);
 #endif
-#ifdef __linux__
+#if defined(__linux__) || defined(__APPLE__)
     int status_RTS=0;
     ioctl(fd, TIOCMGET, &status_RTS);
     if (Status)
@@ -609,7 +609,7 @@ bool rOc_serial::isCTS()
         return true;
     return false;
 #endif
-#ifdef __linux__
+#if defined(__linux__) || defined(__APPLE__)
     int status=0;
     //Get the current status of the CTS bit
     ioctl(fd, TIOCMGET, &status);
@@ -634,7 +634,7 @@ bool rOc_serial::isDTR()
         return true;
     return false;
 #endif
-#ifdef __linux__
+#if defined(__linux__) || defined(__APPLE__)
     int status=0;
     //Get the current status of the CTS bit
     ioctl(fd, TIOCMGET, &status);
@@ -659,7 +659,7 @@ bool rOc_serial::isRTS()
         return true;
     return false;
 #endif
-#ifdef __linux__
+#if defined(__linux__) || defined(__APPLE__)
     int status=0;
     //Get the current status of the CTS bit
     ioctl(fd, TIOCMGET, &status);

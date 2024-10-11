@@ -9,7 +9,7 @@
 
 // Constructor
 ObjectOpenGL::ObjectOpenGL(QWidget *parent) :
-        QGLWidget(parent)
+        QOpenGLWidget(parent)
 {
     // Initialize each color
     BackGround_Color    =QColor::fromRgb(50 ,50 ,100);
@@ -41,7 +41,7 @@ ObjectOpenGL::~ObjectOpenGL()
 void ObjectOpenGL::initializeGL()
 {
     // Intitialize Open GL
-    qglClearColor(BackGround_Color);                            // Set backGround color
+    glClearColor(BackGround_Color.redF(), BackGround_Color.greenF(), BackGround_Color.blueF(), 0.0); // Set backGround color
     glShadeModel(GL_FLAT);
     glEnable(GL_DEPTH_TEST);                                    // Depth buffer enabled (Hide invisible items)
     glEnable(GL_CULL_FACE);
@@ -108,10 +108,12 @@ void ObjectOpenGL::paintGL(  )
 #define RAW_GYRO
 #define RAW_MAG
 
+    QColor colour;
 #ifdef RAW_ACC
     // Accelerometer
+    colour = QColor::fromRgb(255 ,51 ,255);
     glBegin(GL_LINES);
-    qglColor(QColor::fromRgb(255 ,51 ,255));
+    glColor3f(colour.redF(), colour.greenF(), colour.blueF());
     glVertex3d(0,0,0);
     glVertex3d(ax,ay,az);
     glEnd();
@@ -119,8 +121,9 @@ void ObjectOpenGL::paintGL(  )
 
 #ifdef RAW_GYRO
     // Gyroscopes
+    colour = QColor::fromRgb(255 ,51 ,255);
     glBegin(GL_LINES);
-    qglColor(QColor::fromRgb(255,255 ,0));
+    glColor3f(colour.redF(), colour.greenF(), colour.blueF());
     glVertex3d(0,0,0);
     glVertex3d(gx,gy,gz);
     glEnd();
@@ -129,7 +132,8 @@ void ObjectOpenGL::paintGL(  )
 #ifdef RAW_MAG
     // Magnetometer
     glBegin(GL_LINES);
-    qglColor(QColor::fromRgb(32,32,32));
+    colour = QColor::fromRgb(32, 32, 32);
+    glColor3f(colour.redF(), colour.greenF(), colour.blueF());
     glVertex3d(0,0,0);
     glVertex3d(mx,my,mz);
     glEnd();
@@ -160,6 +164,7 @@ void ObjectOpenGL::paintGL(  )
 
 void ObjectOpenGL::Draw_Box()
 {
+    QColor colour;
 
     glPushMatrix();
 
@@ -175,7 +180,8 @@ void ObjectOpenGL::Draw_Box()
 
     // Bottom
     glBegin(GL_POLYGON);
-    qglColor(QColor::fromRgb(0,0,255,128));
+    colour = QColor::fromRgb(0,0,255,128);
+    glColor3f(colour.redF(), colour.greenF(), colour.blueF());
     glVertex3d(-0.8 ,-0.5   ,-0.2);
     glVertex3d(-0.8 ,0.5    ,-0.2);
     glVertex3d(0.8  ,0.5    ,-0.2);
@@ -184,7 +190,8 @@ void ObjectOpenGL::Draw_Box()
 
     // Top
     glBegin(GL_POLYGON);
-    qglColor(QColor::fromRgb(0,255,0,128));
+    colour = QColor::fromRgb(0,255,0,128);
+    glColor3f(colour.redF(), colour.greenF(), colour.blueF());
     glVertex3d(-0.8 ,-0.5   ,0.2);
     glVertex3d(0.8  ,-0.5   ,0.2);
     glVertex3d(0.8  ,0.5    ,0.2);
@@ -192,7 +199,8 @@ void ObjectOpenGL::Draw_Box()
     glEnd();
 
     glBegin(GL_POLYGON);
-    qglColor(QColor::fromRgb(255,0,0,128));
+    colour = QColor::fromRgb(255,0,0,128);
+    glColor3f(colour.redF(), colour.greenF(), colour.blueF());
     glVertex3d(0.8  ,-0.5    ,0.2);
     glVertex3d(0.8  ,-0.5    ,-0.2);
     glVertex3d(0.8  ,0.5     ,-0.2);
@@ -200,7 +208,8 @@ void ObjectOpenGL::Draw_Box()
     glEnd();
 
     glBegin(GL_POLYGON);
-    qglColor(QColor::fromRgb(255,255,0,128));
+    colour = QColor::fromRgb(255,255,0,128);
+    glColor3f(colour.redF(), colour.greenF(), colour.blueF());
     glVertex3d(-0.8  ,-0.5    ,0.2);
     glVertex3d(-0.8  ,0.5     ,0.2);
     glVertex3d(-0.8  ,0.5     ,-0.2);
@@ -208,7 +217,8 @@ void ObjectOpenGL::Draw_Box()
     glEnd();
 
     glBegin(GL_POLYGON);
-    qglColor(QColor::fromRgb(255,0,255,128));
+    colour = QColor::fromRgb(255,0,255,128);
+    glColor3f(colour.redF(), colour.greenF(), colour.blueF());
     glVertex3d(-0.8  ,0.5    ,0.2);
     glVertex3d(0.8   ,0.5     ,0.2);
     glVertex3d(0.8   ,0.5     ,-0.2);
@@ -216,14 +226,16 @@ void ObjectOpenGL::Draw_Box()
     glEnd();
 
     glBegin(GL_POLYGON);
-    qglColor(QColor::fromRgb(0,255,255,128));
+    colour = QColor::fromRgb(0,255,255,128);
+    glColor3f(colour.redF(), colour.greenF(), colour.blueF());
     glVertex3d(-0.8  ,-0.5    ,0.2);
     glVertex3d(-0.8  ,-0.5    ,-0.2);
     glVertex3d(0.8   ,-0.5     ,-0.2);
     glVertex3d(0.8   ,-0.5     ,0.2);
     glEnd();
 
-    qglColor(QColor::fromRgb(255,255,255,255));
+    colour = QColor::fromRgb(255,255,255,255);
+    glColor3f(colour.redF(), colour.greenF(), colour.blueF());
     glPointSize(10.0);
 
     glBegin(GL_POINTS);
@@ -246,38 +258,23 @@ void ObjectOpenGL::Draw_Frame()
     glLineWidth(10.0);
     // X-axis
     glBegin(GL_LINES);
-    qglColor(Axis_X_Color);
+    glColor3f(Axis_X_Color.redF(), Axis_X_Color.greenF(), Axis_X_Color.blueF());
     glVertex3d(0,0,0);
     glVertex3d(0.25, 0, 0);
     glEnd();
     // Y-axis
     glBegin(GL_LINES);
-    qglColor(Axis_Y_Color);
+    glColor3f(Axis_Y_Color.redF(), Axis_Y_Color.greenF(), Axis_Y_Color.blueF());
     glVertex3d(0,0,0);
     glVertex3d(0, 0.25, 0);
     glEnd();
     // Z-axis
     glBegin(GL_LINES);
-    qglColor(Axis_Z_Color);
+    glColor3f(Axis_Z_Color.redF(), Axis_Z_Color.greenF(), Axis_Z_Color.blueF());
     glVertex3d(0,0,0);
     glVertex3d(0, 0, 0.25);
     glEnd();
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 // -------------------------------------------------
 // Standard views
@@ -389,7 +386,7 @@ void ObjectOpenGL::SetXRotation(int angle)
     {
         xRot = angle;
         emit xRotationChanged(angle);
-        updateGL();
+        update();
     }
 }
 
@@ -401,7 +398,7 @@ void ObjectOpenGL::SetYRotation(int angle)
     {
         yRot = angle;
         emit yRotationChanged(angle);
-        updateGL();
+        update();
     }
 }
 
@@ -414,7 +411,7 @@ void ObjectOpenGL::SetZRotation(int angle)
     {
         zRot = angle;
         emit zRotationChanged(angle);
-        updateGL();
+        update();
     }
 }
 
@@ -434,10 +431,12 @@ void ObjectOpenGL::mousePressEvent(QMouseEvent *event){
 void ObjectOpenGL::wheelEvent(QWheelEvent *event)
 {
 
-    if(event->delta()<0)
-        Zoom/= 1-(event->delta()/120.0)/10.0;
-    if(event->delta()>0)
-        Zoom*= 1+(event->delta()/120.0)/10.0;
+    int delta = event->angleDelta().manhattanLength();
+    if(delta < 0) {
+        Zoom /= 1 - (delta / 120.0) / 10.0;
+    } else if(delta > 0) {
+        Zoom *= 1 + (delta / 120.0) / 10.0;
+    }
 }
 
 // Mouse move event

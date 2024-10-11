@@ -1,11 +1,8 @@
-#ifndef ROC_TIMER_H
-#define ROC_TIMER_H
 
-#include <inttypes.h>
+#pragma once
+
+#include <cstdint>
 #include <sys/time.h>
-#include <iostream>
-
-
 
 
 /*!
@@ -58,5 +55,3 @@ private:
     struct timeval          initialTime;
 
 };
-
-#endif // ROC_TIMER_H

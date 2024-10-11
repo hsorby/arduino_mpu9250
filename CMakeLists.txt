@@ -1,0 +1,23 @@
+
+cmake_minimum_required(VERSION 3.18)
+
+project(MPU9250-GUI VERSION 1.0.0 LANGUAGES CXX)
+
+# BUILD_TYPE ==> MPU9250_GUI_BUILD_TYPE
+if(NOT IS_MULTI_CONFIG)
+  set(_PARAM_ANNOTATION "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel.")
+  if(DEFINED BUILD_TYPE AND NOT BUILD_TYPE STREQUAL "")
+    set(MPU9250_GUI_BUILD_TYPE ${BUILD_TYPE} CACHE STRING "${_PARAM_ANNOTATION}" FORCE)
+  elseif(NOT CMAKE_BUILD_TYPE STREQUAL "")
+    set(MPU9250_GUI_BUILD_TYPE ${CMAKE_BUILD_TYPE} CACHE STRING "${_PARAM_ANNOTATION}")
+  else()
+    set(MPU9250_GUI_BUILD_TYPE "Release" CACHE STRING "${_PARAM_ANNOTATION}" FORCE)
+  endif()
+endif()
+unset(BUILD_TYPE CACHE)
+
+set(CMAKE_AUTOMOC ON)
+find_package(Qt6 COMPONENTS Gui Widgets OpenGLWidgets REQUIRED)
+
+add_subdirectory(src)
+
