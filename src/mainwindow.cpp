@@ -117,42 +117,38 @@ void MainWindow::onTimer_ReadData()
         char buffer[200];
 
         mpu9250.readString(buffer, '\n', 200, 10);
-        std::cout << "buffer: " << buffer << std::endl;
+        // std::cout << "buffer: " << buffer << std::endl;
         //mpu9250.readStringNoTimeOut(buffer,'\n',200);
 
 
         // Parse raw data
         int  it;
-        int  iax,iay,iaz;
-        int  igx,igy,igz;
-        int  imx,imy,imz;
-        sscanf (buffer,"%d %d %d %d %d %d %d %d %d %d",&it,&iax,&iay,&iaz,&igx,&igy,&igz,&imx,&imy,&imz);
-
-        /*
-        // Display raw data
-        std::cout << it/1000. << "\t";
-        std::cout << iax << "\t" << iay << "\t" << iaz << "\t";
-        std::cout << igx << "\t" << igy << "\t" << igz << "\t";
-        std::cout << imx << "\t" << imy << "\t" << imz << "\t";
-        std::cout << std::endl;
-        */
-
-        // Convert into floats
         float ax,ay,az;
         float gx,gy,gz;
         float mx,my,mz;
+        float time;
+        sscanf (buffer,"%d %f %f %f %f %f %f %f %f %f %f",&it,&ax,&ay,&az,&gx,&gy,&gz,&mx,&my,&mz, &time);
 
-        ax=iax*RATIO_ACC;
-        ay=iay*RATIO_ACC;
-        az=iaz*RATIO_ACC;
 
-        gx=(igx-48.4827)*RATIO_GYRO;
-        gy=(igy+76.3552)*RATIO_GYRO;
-        gz=(igz+64.3234)*RATIO_GYRO;
+        // Display raw data
+        // std::cout << "reading: " << it << "\t";
+        // std::cout << ax << "\t" << ay << "\t" << az << "\t";
+        // std::cout << gx << "\t" << gy << "\t" << gz << "\t";
+        // std::cout << mx << "\t" << my << "\t" << mz << "\t";
+        // std::cout << time << std::endl;
 
-        mx=imx*RATIO_MAG;
-        my=imy*RATIO_MAG;
-        mz=imz*RATIO_MAG;
+
+        // ax=iax*RATIO_ACC;
+        // ay=iay*RATIO_ACC;
+        // az=iaz*RATIO_ACC;
+
+        // gx=(igx-48.4827)*RATIO_GYRO;
+        // gy=(igy+76.3552)*RATIO_GYRO;
+        // gz=(igz+64.3234)*RATIO_GYRO;
+
+        // mx=imx*RATIO_MAG;
+        // my=imy*RATIO_MAG;
+        // mz=imz*RATIO_MAG;
 
         Object_GL->setAcceleromter(ax,ay,az);
         Object_GL->setGyroscope(gx,gy,gz);
@@ -160,7 +156,7 @@ void MainWindow::onTimer_ReadData()
 
         MadgwickAHRSupdate(gx,gy,gz,ax,ay,az,mx,my,mz);
         //        MadgwickAHRSupdateIMU(gx,gy,gz,ax,ay,az);
-        //        std::cout << q0 << " \t" << q1 << " \t" << q2 << " \t" << q3 << std::endl;
+        std::cout << "Madgwick AHRS update: " << q0 << " \t" << q1 << " \t" << q2 << " \t" << q3 << std::endl;
 
         double R11 = 2.*q0*q0 -1 +2.*q1*q1;
         double R21 = 2.*(q1*q2 - q0*q3);
