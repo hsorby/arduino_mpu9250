@@ -164,9 +164,9 @@ void MainWindow::onTimer_ReadData()
         double R32 = 2.*(q2*q3 - q0*q1);
         double R33 = 2.*q0*q0 -1 +2.*q3*q3;
 
-        double phi = atan2(R32, R33 );
-        double theta = -atan(R31 / sqrt(1-R31*R31) );
-        double psi = atan2(R21, R11 );
+        double phi = atan2(R32, R33);
+        double theta = -atan(R31 / sqrt(1-R31*R31));
+        double psi = atan2(R21, R11);
 
 
 

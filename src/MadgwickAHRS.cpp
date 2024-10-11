@@ -3,7 +3,7 @@
 //=====================================================================================================
 //
 // Implementation of Madgwick's IMU and AHRS algorithms.
-// See: http://www.x-io.co.uk/node/8#open_source_ahrs_and_imu_algorithms
+// See: https://www.x-io.co.uk/node/8#open_source_ahrs_and_imu_algorithms
 //
 // Date			Author          Notes
 // 29/09/2011	SOH Madgwick    Initial release
@@ -17,6 +17,9 @@
 
 #include "MadgwickAHRS.h"
 
+
+#include <math.h>
+
 //---------------------------------------------------------------------------------------------------
 // Definitions
 
@@ -29,7 +32,8 @@
 volatile float beta = betaDef; // 2 * proportional gain (Kp)
 volatile float
     q0 = 1.0f,
-    q1 = 0.0f, q2 = 0.0f,
+    q1 = 0.0f,
+    q2 = 0.0f,
     q3 = 0.0f; // quaternion of sensor frame relative to auxiliary frame
 
 //---------------------------------------------------------------------------------------------------

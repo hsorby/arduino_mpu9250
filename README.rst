@@ -22,4 +22,6 @@ The application expects the MPU9250 to output data in a single line in the follo
 
   epoch accel_x accel_y accel_z gyro_x gyro_y gyro_z mag_x mag_y mag_z temperature
 
+Moving to using this code for Madgwicks algorithm: https://github.com/xioTechnologies/Fusion.
+
 This code has not been tried or tested on anything other than macOS.
